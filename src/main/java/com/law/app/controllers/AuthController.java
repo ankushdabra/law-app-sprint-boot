@@ -1,6 +1,5 @@
 package com.law.app.controllers;
 
-import com.law.app.entities.Roles;
 import com.law.app.payload.request.ApiRequestDto;
 import com.law.app.payload.request.LoginRequestDto;
 import com.law.app.payload.request.SignupRequestDto;
