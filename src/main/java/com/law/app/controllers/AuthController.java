@@ -23,7 +23,7 @@ public class AuthController {
 
     private final AuthService authService;
 
-    @PostMapping("/signin")
+    @PostMapping("/login")
     public ApiResponseDto<AuthProfileResponseDto> authenticateUser(@Valid @RequestBody ApiRequestDto<LoginRequestDto> request) {
         AuthProfileResponseDto response = authService.authenticateUser(request.getData());
         return ApiResponseDto.ok("Authentication successful", response);
