@@ -29,7 +29,6 @@ public class UserProfileDto {
     private String officeCity;
     private String officeState;
     private String lawFirmName;
-    private Boolean termsAccepted;
     private List<String> roles;
 
     public static UserProfileDto fromEntity(UserEntity user) {
@@ -47,7 +46,6 @@ public class UserProfileDto {
                 .officeCity(user.getOfficeCity())
                 .officeState(user.getOfficeState())
                 .lawFirmName(user.getLawFirmName())
-                .termsAccepted(user.getTermsAccepted())
                 .roles(user.getRoles().stream().map(role -> role.getName().name()).toList())
                 .build();
     }
