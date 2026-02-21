@@ -1,5 +1,5 @@
 package com.law.app.models;
 
-public enum ERole {
+public enum Roles {
     ROLE_USER, ROLE_LEGAL
 }
