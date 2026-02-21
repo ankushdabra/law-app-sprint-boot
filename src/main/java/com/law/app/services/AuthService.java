@@ -1,11 +1,11 @@
 package com.law.app.services;
 
-import com.law.app.models.Roles;
-import com.law.app.models.Role;
-import com.law.app.models.User;
-import com.law.app.payload.request.LoginRequest;
-import com.law.app.payload.request.SignupRequest;
-import com.law.app.payload.response.JwtResponse;
+import com.law.app.entities.RoleEntity;
+import com.law.app.entities.Roles;
+import com.law.app.entities.UserEntity;
+import com.law.app.payload.request.LoginRequestDto;
+import com.law.app.payload.request.SignupRequestDto;
+import com.law.app.payload.response.JwtResponseDto;
 import com.law.app.repository.RoleRepository;
 import com.law.app.repository.UserRepository;
 import com.law.app.security.jwt.JwtUtils;
@@ -32,7 +32,7 @@ public class AuthService {
     private final PasswordEncoder encoder;
     private final JwtUtils jwtUtils;
 
-    public JwtResponse authenticateUser(LoginRequest loginRequest) {
+    public JwtResponseDto authenticateUser(LoginRequestDto loginRequest) {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -41,10 +41,10 @@ public class AuthService {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         List<String> roles = userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList());
 
-        return JwtResponse.builder().accessToken(jwt).username(userDetails.getUsername()).email(userDetails.getEmail()).roles(roles).build();
+        return JwtResponseDto.builder().accessToken(jwt).username(userDetails.getUsername()).email(userDetails.getEmail()).roles(roles).build();
     }
 
-    public void registerUser(SignupRequest signUpRequest) {
+    public void registerUser(SignupRequestDto signUpRequest) {
         if (userRepository.existsByUsername(signUpRequest.getUsername())) {
             throw new RuntimeException("Error: Username is already taken!");
         }
@@ -54,25 +54,26 @@ public class AuthService {
         }
 
         Set<String> strRoles = signUpRequest.getRole();
-        Set<Role> roles = new HashSet<>();
+        Set<RoleEntity> roles = new HashSet<>();
 
         if (strRoles == null) {
-            Role userRole = roleRepository.findByName(Roles.ROLE_USER).orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+            RoleEntity userRole = roleRepository.findByName(Roles.ROLE_USER).orElseThrow(() -> new RuntimeException("Error: Role is not found."));
             roles.add(userRole);
         } else {
             strRoles.forEach(role -> {
                 if (role.equalsIgnoreCase("legal")) {
-                    Role legalRole = roleRepository.findByName(Roles.ROLE_LEGAL).orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                    RoleEntity legalRole = roleRepository.findByName(Roles.ROLE_LEGAL).orElseThrow(() -> new RuntimeException("Error: Role is not found."));
                     roles.add(legalRole);
                 } else {
-                    Role userRole = roleRepository.findByName(Roles.ROLE_USER).orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                    RoleEntity userRole = roleRepository.findByName(Roles.ROLE_USER).orElseThrow(() -> new RuntimeException("Error: Role is not found."));
                     roles.add(userRole);
                 }
             });
         }
 
-        User user = User.builder().username(signUpRequest.getUsername()).email(signUpRequest.getEmail()).password(encoder.encode(signUpRequest.getPassword())).roles(roles).build();
+        UserEntity user = UserEntity.builder().username(signUpRequest.getUsername()).email(signUpRequest.getEmail()).password(encoder.encode(signUpRequest.getPassword())).roles(roles).build();
 
         userRepository.save(user);
     }
 }
+

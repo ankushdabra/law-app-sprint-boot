@@ -1,6 +1,7 @@
 package com.law.app.payload.request;
 
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,10 +13,9 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class LoginRequest {
-    @NotBlank
-    private String username;
-
-    @NotBlank
-    private String password;
+public class ApiRequestDto<T> {
+    @NotNull
+    @Valid
+    private T data;
 }
+

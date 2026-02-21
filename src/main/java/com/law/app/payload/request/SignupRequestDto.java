@@ -16,7 +16,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class SignupRequest {
+public class SignupRequestDto {
     @NotBlank
     @Size(min = 3, max = 20)
     private String username;
@@ -32,3 +32,4 @@ public class SignupRequest {
     @Size(min = 6, max = 40)
     private String password;
 }
+

@@ -6,18 +6,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
-
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class JwtResponse {
-    private String accessToken;
-    @Builder.Default
-    private String tokenType = "Bearer";
-    private String username;
-    private String email;
-    private List<String> roles;
+public class MessageResponseDto {
+    private String message;
 }
+

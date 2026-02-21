@@ -1,10 +1,10 @@
 package com.law.app.controllers;
 
-import com.law.app.payload.request.ApiRequest;
-import com.law.app.payload.request.LoginRequest;
-import com.law.app.payload.request.SignupRequest;
-import com.law.app.payload.response.ApiResponse;
-import com.law.app.payload.response.JwtResponse;
+import com.law.app.payload.request.ApiRequestDto;
+import com.law.app.payload.request.LoginRequestDto;
+import com.law.app.payload.request.SignupRequestDto;
+import com.law.app.payload.response.ApiResponseDto;
+import com.law.app.payload.response.JwtResponseDto;
 import com.law.app.services.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,14 +22,15 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/signin")
-    public ResponseEntity<ApiResponse<JwtResponse>> authenticateUser(@Valid @RequestBody ApiRequest<LoginRequest> request) {
-        JwtResponse jwtResponse = authService.authenticateUser(request.getData());
-        return ApiResponse.okEntity("Authentication successful", jwtResponse);
+    public ResponseEntity<ApiResponseDto<JwtResponseDto>> authenticateUser(@Valid @RequestBody ApiRequestDto<LoginRequestDto> request) {
+        JwtResponseDto jwtResponse = authService.authenticateUser(request.getData());
+        return ApiResponseDto.okEntity("Authentication successful", jwtResponse);
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<ApiResponse<Void>> registerUser(@Valid @RequestBody ApiRequest<SignupRequest> request) {
+    public ResponseEntity<ApiResponseDto<Void>> registerUser(@Valid @RequestBody ApiRequestDto<SignupRequestDto> request) {
         authService.registerUser(request.getData());
-        return ApiResponse.okEntity("User registered successfully", null);
+        return ApiResponseDto.okEntity("User registered successfully", null);
     }
 }
+

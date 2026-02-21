@@ -15,7 +15,7 @@ import java.time.Instant;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ApiResponse<T> {
+public class ApiResponseDto<T> {
     @Builder.Default
     private Instant timestamp = Instant.now();
     private int status;
@@ -23,8 +23,8 @@ public class ApiResponse<T> {
     private String message;
     private T data;
 
-    public static <T> ApiResponse<T> ok(String message, T data) {
-        return ApiResponse.<T>builder()
+    public static <T> ApiResponseDto<T> ok(String message, T data) {
+        return ApiResponseDto.<T>builder()
             .status(HttpStatus.OK.value())
             .success(true)
             .message(message)
@@ -32,8 +32,8 @@ public class ApiResponse<T> {
             .build();
     }
 
-    public static <T> ApiResponse<T> error(HttpStatus status, String message, T data) {
-        return ApiResponse.<T>builder()
+    public static <T> ApiResponseDto<T> error(HttpStatus status, String message, T data) {
+        return ApiResponseDto.<T>builder()
             .status(status.value())
             .success(false)
             .message(message)
@@ -41,7 +41,8 @@ public class ApiResponse<T> {
             .build();
     }
 
-    public static <T> ResponseEntity<ApiResponse<T>> okEntity(String message, T data) {
+    public static <T> ResponseEntity<ApiResponseDto<T>> okEntity(String message, T data) {
         return ResponseEntity.ok(ok(message, data));
     }
 }
+

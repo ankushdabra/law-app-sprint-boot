@@ -1,17 +1,17 @@
 package com.law.app.services;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.law.app.models.User;
+import com.law.app.entities.UserEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
-import java.util.List;
+import java.io.Serial;
+import java.util.ArrayList;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Getter
@@ -19,16 +19,19 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @EqualsAndHashCode(of = "id")
 public class UserDetailsImpl implements UserDetails {
+    @Serial
     private static final long serialVersionUID = 1L;
-    private Long id;
+    private UUID id;
     private String username;
     private String email;
     @JsonIgnore
     private String password;
-    private Collection<? extends GrantedAuthority> authorities;
+    private ArrayList<SimpleGrantedAuthority> authorities;
 
-    public static UserDetailsImpl build(User user) {
-        List<GrantedAuthority> authorities = user.getRoles().stream().map(role -> new SimpleGrantedAuthority(role.getName().name())).collect(Collectors.toList());
+    public static UserDetailsImpl build(UserEntity user) {
+        ArrayList<SimpleGrantedAuthority> authorities = user.getRoles().stream()
+            .map(role -> new SimpleGrantedAuthority(role.getName().name()))
+            .collect(Collectors.toCollection(ArrayList::new));
 
         return UserDetailsImpl.builder()
             .id(user.getId())
