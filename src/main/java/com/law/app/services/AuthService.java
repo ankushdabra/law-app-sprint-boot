@@ -33,6 +33,7 @@ public class AuthService {
 
     public AuthProfileResponseDto registerUser(SignupRequestDto signUpRequest, Roles roleUser) {
         validateUniqueUser(signUpRequest.getUsername(), signUpRequest.getEmail());
+        SignupRequestDto.AdvocateProfile advocateProfile = signUpRequest.getAdvocateProfile();
 
         UserEntity user = UserEntity.builder()
                 .username(signUpRequest.getUsername())
@@ -40,27 +41,27 @@ public class AuthService {
                 .email(signUpRequest.getEmail())
                 .mobileNumber(signUpRequest.getMobileNumber())
                 .password(encoder.encode(signUpRequest.getPassword()))
-                .barCouncilEnrollmentNumber(signUpRequest.getBarCouncilEnrollmentNumber())
-                .enrollmentYear(signUpRequest.getEnrollmentYear())
-                .stateBarCouncil(signUpRequest.getStateBarCouncil())
-                .primaryPracticeArea(signUpRequest.getPrimaryPracticeArea())
-                .yearsOfExperience(signUpRequest.getYearsOfExperience())
-                .officeCity(signUpRequest.getOfficeCity())
-                .officeState(signUpRequest.getOfficeState())
-                .lawFirmName(signUpRequest.getLawFirmName())
-                .termsAccepted(signUpRequest.getTermsAccepted())
+                .barCouncilEnrollmentNumber(advocateProfile != null ? advocateProfile.getBarCouncilEnrollmentNumber() : null)
+                .enrollmentYear(advocateProfile != null ? advocateProfile.getEnrollmentYear() : null)
+                .stateBarCouncil(advocateProfile != null ? advocateProfile.getStateBarCouncil() : null)
+                .primaryPracticeArea(advocateProfile != null ? advocateProfile.getPrimaryPracticeArea() : null)
+                .yearsOfExperience(advocateProfile != null ? advocateProfile.getYearsOfExperience() : null)
+                .officeCity(advocateProfile != null ? advocateProfile.getOfficeCity() : null)
+                .officeState(advocateProfile != null ? advocateProfile.getOfficeState() : null)
+                .lawFirmName(advocateProfile != null ? advocateProfile.getLawFirmName() : null)
                 .roles(Set.of(getRoleOrThrow(roleUser)))
                 .build();
 
-        return buildAuthResponse(user, signUpRequest.getPassword());
+        UserEntity savedUser = userRepository.save(user);
+
+        return buildAuthResponse(savedUser, signUpRequest.getPassword());
     }
 
     private AuthProfileResponseDto buildAuthResponse(UserEntity user, String rawPassword) {
-        UserEntity savedUser = userRepository.save(user);
 
         return AuthProfileResponseDto.builder()
-                .accessToken(jwtUtils.buildJwtResponse(savedUser.getUsername(), rawPassword))
-                .profile(UserProfileDto.fromEntity(savedUser))
+                .accessToken(jwtUtils.buildJwtResponse(user.getUsername(), rawPassword))
+                .profile(UserProfileDto.fromEntity(user))
                 .build();
     }
 
@@ -78,4 +79,3 @@ public class AuthService {
                 .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
     }
 }
-

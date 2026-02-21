@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -31,30 +32,32 @@ public class SignupRequestDto {
     private String password;
 
     private String fullName;
-
     private String mobileNumber;
 
-    private String confirmPassword;
+    @Valid
+    private AdvocateProfile advocateProfile;
 
-    private String barCouncilEnrollmentNumber;
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class AdvocateProfile {
+        private String barCouncilEnrollmentNumber;
 
-    @Min(1960)
-    @Max(2100)
-    private Integer enrollmentYear;
+        @Min(1960)
+        @Max(2100)
+        private Integer enrollmentYear;
 
-    private String stateBarCouncil;
+        private String stateBarCouncil;
+        private String primaryPracticeArea;
 
-    private String primaryPracticeArea;
+        @Min(0)
+        @Max(70)
+        private Integer yearsOfExperience;
 
-    @Min(0)
-    @Max(70)
-    private Integer yearsOfExperience;
-
-    private String officeCity;
-
-    private String officeState;
-
-    private String lawFirmName;
-
-    private Boolean termsAccepted;
+        private String officeCity;
+        private String officeState;
+        private String lawFirmName;
+    }
 }
