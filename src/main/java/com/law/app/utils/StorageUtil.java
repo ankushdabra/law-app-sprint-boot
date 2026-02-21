@@ -31,8 +31,8 @@ public class StorageUtil {
         String contentType = normalizeContentType(file.getContentType(), fileName);
         String requiredPrefix = Objects.toString(requiredContentTypePrefix, "").trim().toLowerCase(Locale.ROOT);
         String label = StringUtils.hasText(fieldLabel) ? fieldLabel : "File";
-        if (StringUtils.hasText(requiredPrefix) && !contentType.startsWith(requiredPrefix)) {
-            throw new RuntimeException("Error: " + label + " must be of type " + requiredPrefix + "*.");
+        if (StringUtils.hasText(requiredPrefix) && !matchesRequiredType(contentType, requiredPrefix)) {
+            throw new RuntimeException("Error: " + label + " must be of type " + requiredPrefix + ".");
         }
 
         try {
@@ -58,5 +58,28 @@ public class StorageUtil {
         if (lower.endsWith(".bmp")) return "image/bmp";
         if (lower.endsWith(".jpg") || lower.endsWith(".jpeg")) return "image/jpeg";
         return DEFAULT_IMAGE_CONTENT_TYPE;
+    }
+
+    private boolean matchesRequiredType(String contentType, String requiredTypeExpression) {
+        String[] tokens = requiredTypeExpression.split("\\|");
+        for (String rawToken : tokens) {
+            String token = rawToken.trim().toLowerCase(Locale.ROOT);
+            if (token.isEmpty()) {
+                continue;
+            }
+            if (token.endsWith("/*")) {
+                String prefix = token.substring(0, token.length() - 1);
+                if (contentType.startsWith(prefix)) {
+                    return true;
+                }
+            } else if (token.endsWith("/")) {
+                if (contentType.startsWith(token)) {
+                    return true;
+                }
+            } else if (contentType.equals(token)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

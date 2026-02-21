@@ -62,6 +62,9 @@ public class UserEntity {
     @Column(columnDefinition = "TEXT")
     private String profilePictureData;
 
+    @Column(columnDefinition = "TEXT")
+    private String stateBarCouncilCertificateData;
+
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
     @Builder.Default

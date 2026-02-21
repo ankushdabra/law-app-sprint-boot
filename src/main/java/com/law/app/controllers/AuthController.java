@@ -45,10 +45,11 @@ public class AuthController {
     }
 
     @PostMapping(value = "/signup/advocate", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @Operation(summary = "Signup Advocate", requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE, schema = @Schema(implementation = LegalSignupMultipartRequest.class), encoding = {@Encoding(name = "data", contentType = MediaType.APPLICATION_JSON_VALUE), @Encoding(name = "profilePicture", contentType = "image/*")})))
+    @Operation(summary = "Signup Advocate", requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE, schema = @Schema(implementation = LegalSignupMultipartRequest.class), encoding = {@Encoding(name = "data", contentType = MediaType.APPLICATION_JSON_VALUE), @Encoding(name = "profilePicture", contentType = "image/*"), @Encoding(name = "stateBarCouncilCertificate", contentType = "application/pdf, image/*")})))
     public ApiResponseDto<AuthProfileResponseDto> registerAdvocate(@Valid @RequestPart("data") ApiRequestDto<SignupRequestLegalDto> requestDto,
-                                                                   @RequestPart(value = "profilePicture", required = false) MultipartFile profilePicture) {
-        AuthProfileResponseDto response = authService.registerLegal(requestDto.getData(), profilePicture);
+                                                                   @RequestPart(value = "profilePicture", required = false) MultipartFile profilePicture,
+                                                                   @RequestPart(value = "stateBarCouncilCertificate", required = false) MultipartFile stateBarCouncilCertificate) {
+        AuthProfileResponseDto response = authService.registerLegal(requestDto.getData(), profilePicture, stateBarCouncilCertificate);
         return ApiResponseDto.ok("Advocate registered successfully", response);
     }
 
@@ -68,5 +69,8 @@ public class AuthController {
 
         @Schema(type = "string", format = "binary")
         public String profilePicture;
+
+        @Schema(type = "string", format = "binary")
+        public String stateBarCouncilCertificate;
     }
 }

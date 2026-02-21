@@ -55,9 +55,10 @@ public class AuthService {
         return buildAuthResponse(savedUser, data.getPassword());
     }
 
-    public AuthProfileResponseDto registerLegal(SignupRequestLegalDto data, MultipartFile profilePicture) {
+    public AuthProfileResponseDto registerLegal(SignupRequestLegalDto data, MultipartFile profilePicture, MultipartFile stateBarCouncilCertificate) {
         validateUniqueUser(data.getUsername(), data.getEmail());
         StoredFileDto profilePictureFile = storageUtil.parseMultipartFile(profilePicture, "image/", "Profile picture");
+        StoredFileDto stateBarCouncilCertificateFile = storageUtil.parseMultipartFile(stateBarCouncilCertificate, "image/|application/pdf", "State bar council certificate");
         UserEntity user = UserEntity.builder()
                 .username(data.getUsername())
                 .fullName(data.getFullName())
@@ -73,6 +74,7 @@ public class AuthService {
                 .officeState(data.getOfficeState())
                 .lawFirmName(data.getLawFirmName())
                 .profilePictureData(profilePictureFile != null ? profilePictureFile.data() : null)
+                .stateBarCouncilCertificateData(stateBarCouncilCertificateFile != null ? stateBarCouncilCertificateFile.data() : null)
                 .roles(Set.of(getRoleOrThrow(Roles.ROLE_LEGAL)))
                 .build();
 
