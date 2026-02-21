@@ -4,8 +4,8 @@ import com.law.app.entities.Roles;
 import com.law.app.payload.request.ApiRequestDto;
 import com.law.app.payload.request.LoginRequestDto;
 import com.law.app.payload.request.SignupRequestDto;
-import com.law.app.payload.response.AuthProfileResponseDto;
 import com.law.app.payload.response.ApiResponseDto;
+import com.law.app.payload.response.AuthProfileResponseDto;
 import com.law.app.services.AuthService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import jakarta.validation.Valid;
@@ -29,7 +29,7 @@ public class AuthController {
         return ApiResponseDto.ok("Authentication successful", response);
     }
 
-    @PostMapping("/signup/user")
+    @PostMapping( "/signup/user")
     public ApiResponseDto<AuthProfileResponseDto> registerUser(@Valid @RequestBody ApiRequestDto<SignupRequestDto> request) {
         AuthProfileResponseDto response = authService.registerUser(request.getData(), Roles.ROLE_USER);
         return ApiResponseDto.ok("User registered successfully", response);
