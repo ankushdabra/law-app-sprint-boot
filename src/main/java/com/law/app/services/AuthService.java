@@ -3,13 +3,16 @@ package com.law.app.services;
 import com.law.app.entities.RoleEntity;
 import com.law.app.entities.Roles;
 import com.law.app.entities.UserEntity;
+import com.law.app.payload.request.ApiRequestDto;
 import com.law.app.payload.request.LoginRequestDto;
 import com.law.app.payload.request.SignupRequestDto;
+import com.law.app.payload.request.SignupRequestLegalDto;
 import com.law.app.payload.response.AuthProfileResponseDto;
 import com.law.app.payload.response.UserProfileDto;
 import com.law.app.repository.RoleRepository;
 import com.law.app.repository.UserRepository;
 import com.law.app.security.jwt.JwtUtils;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -31,31 +34,47 @@ public class AuthService {
         return buildAuthResponse(user, loginRequest.getPassword());
     }
 
-    public AuthProfileResponseDto registerUser(SignupRequestDto signUpRequest, Roles roleUser) {
-        validateUniqueUser(signUpRequest.getUsername(), signUpRequest.getEmail());
-        SignupRequestDto.AdvocateProfile advocateProfile = signUpRequest.getAdvocateProfile();
+    public AuthProfileResponseDto registerUser(SignupRequestDto data) {
+        validateUniqueUser(data.getUsername(), data.getEmail());
 
         UserEntity user = UserEntity.builder()
-                .username(signUpRequest.getUsername())
-                .fullName(signUpRequest.getFullName())
-                .email(signUpRequest.getEmail())
-                .mobileNumber(signUpRequest.getMobileNumber())
-                .password(encoder.encode(signUpRequest.getPassword()))
-                .barCouncilEnrollmentNumber(advocateProfile != null ? advocateProfile.getBarCouncilEnrollmentNumber() : null)
-                .enrollmentYear(advocateProfile != null ? advocateProfile.getEnrollmentYear() : null)
-                .stateBarCouncil(advocateProfile != null ? advocateProfile.getStateBarCouncil() : null)
-                .primaryPracticeArea(advocateProfile != null ? advocateProfile.getPrimaryPracticeArea() : null)
-                .yearsOfExperience(advocateProfile != null ? advocateProfile.getYearsOfExperience() : null)
-                .officeCity(advocateProfile != null ? advocateProfile.getOfficeCity() : null)
-                .officeState(advocateProfile != null ? advocateProfile.getOfficeState() : null)
-                .lawFirmName(advocateProfile != null ? advocateProfile.getLawFirmName() : null)
-                .roles(Set.of(getRoleOrThrow(roleUser)))
+                .username(data.getUsername())
+                .fullName(data.getFullName())
+                .email(data.getEmail())
+                .mobileNumber(data.getMobileNumber())
+                .password(encoder.encode(data.getPassword()))
+                .roles(Set.of(getRoleOrThrow(Roles.ROLE_USER)))
                 .build();
 
         UserEntity savedUser = userRepository.save(user);
 
-        return buildAuthResponse(savedUser, signUpRequest.getPassword());
+        return buildAuthResponse(savedUser, data.getPassword());
     }
+
+    public AuthProfileResponseDto registerLegal(SignupRequestLegalDto data) {
+        validateUniqueUser(data.getUsername(), data.getEmail());
+        UserEntity user = UserEntity.builder()
+                .username(data.getUsername())
+                .fullName(data.getFullName())
+                .email(data.getEmail())
+                .mobileNumber(data.getMobileNumber())
+                .password(encoder.encode(data.getPassword()))
+                .barCouncilEnrollmentNumber(data.getBarCouncilEnrollmentNumber())
+                .enrollmentYear(data.getEnrollmentYear())
+                .stateBarCouncil(data.getStateBarCouncil())
+                .primaryPracticeArea(data.getPrimaryPracticeArea())
+                .yearsOfExperience(data.getYearsOfExperience())
+                .officeCity(data.getOfficeCity())
+                .officeState(data.getOfficeState())
+                .lawFirmName(data.getLawFirmName())
+                .roles(Set.of(getRoleOrThrow(Roles.ROLE_LEGAL)))
+                .build();
+
+        UserEntity savedUser = userRepository.save(user);
+
+        return buildAuthResponse(savedUser, data.getPassword());
+    }
+
 
     private AuthProfileResponseDto buildAuthResponse(UserEntity user, String rawPassword) {
 
@@ -78,4 +97,6 @@ public class AuthService {
         return roleRepository.findByName(role)
                 .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
     }
+
+
 }
