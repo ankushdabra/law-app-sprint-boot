@@ -32,10 +32,6 @@ public class ApiResponse<T> {
             .build();
     }
 
-    public static <T> ApiResponse<T> error(String message, T data) {
-        return error(HttpStatus.BAD_REQUEST, message, data);
-    }
-
     public static <T> ApiResponse<T> error(HttpStatus status, String message, T data) {
         return ApiResponse.<T>builder()
             .status(status.value())
@@ -47,9 +43,5 @@ public class ApiResponse<T> {
 
     public static <T> ResponseEntity<ApiResponse<T>> okEntity(String message, T data) {
         return ResponseEntity.ok(ok(message, data));
-    }
-
-    public static <T> ResponseEntity<ApiResponse<T>> errorEntity(HttpStatus status, String message, T data) {
-        return ResponseEntity.status(status).body(error(status, message, data));
     }
 }
