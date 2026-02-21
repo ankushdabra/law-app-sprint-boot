@@ -7,13 +7,16 @@ import com.law.app.payload.request.LoginRequestDto;
 import com.law.app.payload.request.SignupRequestDto;
 import com.law.app.payload.request.SignupRequestLegalDto;
 import com.law.app.payload.response.AuthProfileResponseDto;
+import com.law.app.payload.response.StoredFileDto;
 import com.law.app.payload.response.UserProfileDto;
 import com.law.app.repository.RoleRepository;
 import com.law.app.repository.UserRepository;
 import com.law.app.security.jwt.JwtUtils;
+import com.law.app.utils.StorageUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Set;
 
@@ -24,6 +27,7 @@ public class AuthService {
     private final RoleRepository roleRepository;
     private final PasswordEncoder encoder;
     private final JwtUtils jwtUtils;
+    private final StorageUtil storageUtil;
 
     public AuthProfileResponseDto authenticateUser(LoginRequestDto loginRequest) {
         UserEntity user = userRepository.findByUsername(loginRequest.getUsername())
@@ -32,8 +36,9 @@ public class AuthService {
         return buildAuthResponse(user, loginRequest.getPassword());
     }
 
-    public AuthProfileResponseDto registerUser(SignupRequestDto data) {
+    public AuthProfileResponseDto registerUser(SignupRequestDto data, MultipartFile profilePicture) {
         validateUniqueUser(data.getUsername(), data.getEmail());
+        StoredFileDto profilePictureFile = storageUtil.parseMultipartFile(profilePicture, "image/", "Profile picture");
 
         UserEntity user = UserEntity.builder()
                 .username(data.getUsername())
@@ -41,6 +46,7 @@ public class AuthService {
                 .email(data.getEmail())
                 .mobileNumber(data.getMobileNumber())
                 .password(encoder.encode(data.getPassword()))
+                .profilePictureData(profilePictureFile != null ? profilePictureFile.data() : null)
                 .roles(Set.of(getRoleOrThrow(Roles.ROLE_USER)))
                 .build();
 
@@ -49,8 +55,9 @@ public class AuthService {
         return buildAuthResponse(savedUser, data.getPassword());
     }
 
-    public AuthProfileResponseDto registerLegal(SignupRequestLegalDto data) {
+    public AuthProfileResponseDto registerLegal(SignupRequestLegalDto data, MultipartFile profilePicture) {
         validateUniqueUser(data.getUsername(), data.getEmail());
+        StoredFileDto profilePictureFile = storageUtil.parseMultipartFile(profilePicture, "image/", "Profile picture");
         UserEntity user = UserEntity.builder()
                 .username(data.getUsername())
                 .fullName(data.getFullName())
@@ -65,6 +72,7 @@ public class AuthService {
                 .officeCity(data.getOfficeCity())
                 .officeState(data.getOfficeState())
                 .lawFirmName(data.getLawFirmName())
+                .profilePictureData(profilePictureFile != null ? profilePictureFile.data() : null)
                 .roles(Set.of(getRoleOrThrow(Roles.ROLE_LEGAL)))
                 .build();
 
@@ -95,6 +103,4 @@ public class AuthService {
         return roleRepository.findByName(role)
                 .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
     }
-
-
 }

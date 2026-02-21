@@ -29,6 +29,8 @@ public class UserProfileDto {
     private String officeCity;
     private String officeState;
     private String lawFirmName;
+    private String profilePictureData;
+    private String profilePictureDataUrl;
     private List<String> roles;
 
     public static UserProfileDto fromEntity(UserEntity user) {
@@ -46,7 +48,16 @@ public class UserProfileDto {
                 .officeCity(user.getOfficeCity())
                 .officeState(user.getOfficeState())
                 .lawFirmName(user.getLawFirmName())
+                .profilePictureData(user.getProfilePictureData())
+                .profilePictureDataUrl(buildProfilePictureDataUrl(user.getProfilePictureData()))
                 .roles(user.getRoles().stream().map(role -> role.getName().name()).toList())
                 .build();
+    }
+
+    private static String buildProfilePictureDataUrl(String pictureData) {
+        if (pictureData == null || pictureData.isBlank()) {
+            return null;
+        }
+        return "data:image/jpeg;base64," + pictureData;
     }
 }
