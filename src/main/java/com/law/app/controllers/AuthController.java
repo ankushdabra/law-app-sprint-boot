@@ -6,6 +6,7 @@ import com.law.app.payload.request.SignupRequestDto;
 import com.law.app.payload.response.ApiResponseDto;
 import com.law.app.payload.response.JwtResponseDto;
 import com.law.app.services.AuthService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
+@SecurityRequirements
 public class AuthController {
 
     private final AuthService authService;
