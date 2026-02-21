@@ -38,6 +38,28 @@ public class UserEntity {
 
     private String password;
 
+    private String fullName;
+
+    private String mobileNumber;
+
+    private String barCouncilEnrollmentNumber;
+
+    private Integer enrollmentYear;
+
+    private String stateBarCouncil;
+
+    private String primaryPracticeArea;
+
+    private Integer yearsOfExperience;
+
+    private String officeCity;
+
+    private String officeState;
+
+    private String lawFirmName;
+
+    private Boolean termsAccepted;
+
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
     @Builder.Default
